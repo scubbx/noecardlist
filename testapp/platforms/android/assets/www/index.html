@@ -28,22 +28,52 @@
             * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
                 * Enable inline JS: add 'unsafe-inline' to default-src
         -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+        <meta charset="UTF-8">
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *"> -->
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+		<link rel="stylesheet" href="/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="/css/jquery.mobile.min.css" />
+		<link rel="stylesheet" href="/vendor/waves/waves.min.css" />
+		<link rel="stylesheet" href="/vendor/wow/animate.css" />
+		<link rel="stylesheet" href="/css/nativedroid2.css" />
+        <link rel="stylesheet" href="/css/googleFont.css" />
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <title>Hello World</title>
     </head>
     <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
+        
+        <div data-role="page">
+            
+            <div data-role="header" data-position="fixed" class="wow fadeInDown" data-wow-delay="0.2s">
+                <h1 class="wow fadeIn" data-wow-delay='0.4s'>Niederösterreich</h1>
             </div>
+            
+			<div role="main" class="ui-content" data-inset="false">
+				<ul data-role="listview" data-icon="false" id="listcontent">
+                </ul>
+			</div>
+
+		</div>
+        
+        <div data-role="page" id="page_map">
+        
         </div>
-        <script type="text/javascript" src="cordova.js"></script>
+		
+        <div data-role="details" id="page_details">
+        
+        </div>
+        
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/jquery-ui.min.js"></script>
+        <script src="/js/jquery.mobile.min.js"></script>
+		<script src="/vendor/waves/waves.min.js"></script>
+		<script src="/vendor/wow/wow.min.js"></script>
+		<script src="/js/nativedroid2.js"></script>
+		<script src="/nd2settings.js"></script>
+        <script src="/js/pouchdb-5.1.0.min.js"></script>
+        <script type="text/javascript" src="js/cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
     </body>
 </html>

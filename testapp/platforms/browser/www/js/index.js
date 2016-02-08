@@ -1,51 +1,84 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-var app = {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+$( deviceIsReady );
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+function deviceIsReady() {
+    console.log("deviceIsReady: load");
+    // when the map page is loaded, initialize the leaflet map window
+    $(document).on('pagecreate', '#page-list', refreshList);
+    
+    // set up the databases
+    remoteDatabase = new PouchDB('http://gi88.geoinfo.tuwien.ac.at:5984/noecard');
+    localDatabase = new PouchDB('noecard');
+    initSynchronization();
+    
+    console.log("deviceIsReady: done");
+}
 
-        console.log('Received Event: ' + id);
+function initSynchronization(){
+    var syncOptions = {live: true, retry: true};
+    var sync = PouchDB.sync(localDatabase, remoteDatabase, syncOptions)
+    .on('change', function(info){ 
+        //setStatusIcon("refresh");
+        console.log("sync: change");
+        })
+    .on('paused', function(info){
+        //setStatusIcon("check");
+        refreshList();
+        //drawPlacesOnMap();
+        console.log("sync: paused");
+        })
+    .on('active', function(info){
+        //setStatusIcon("delete");
+        console.log("sync: active");
+        })
+    .on('error', function(info){
+        //setStatusIcon("delete");
+        console.log("sync: error");
+        })
+    .on('complete', function(info){
+        //setStatusIcon("delete");
+        console.log("sync: complete");
+        });
+}
+
+function setStatusIcon(status){
+    if (status == "refresh") {
+        console.log("setStatusIcon: refresh");
+        $('.status-icon').toggleClass('ui-icon-refresh', true);
+        $('.status-icon').toggleClass('ui-icon-delete', false);
+        $('.status-icon').toggleClass('ui-icon-check', false);
+    } else if (status == "delete") {
+        console.log("setStatusIcon: delete");
+        $('.status-icon').toggleClass('ui-icon-refresh', false);
+        $('.status-icon').toggleClass('ui-icon-delete', true);
+        $('.status-icon').toggleClass('ui-icon-check', false);
+    } else if (status == "check") {
+        console.log("setStatusIcon: check");
+        $('.status-icon').toggleClass('ui-icon-refresh', false);
+        $('.status-icon').toggleClass('ui-icon-delete', false);
+        $('.status-icon').toggleClass('ui-icon-check', true);
     }
 };
 
-app.initialize();
+function refreshList(){
+    localDatabase.query('viewinfrastructure/byTitle', { include_docs: true, attachments: true, reduce: false })
+        .then(function (results) {
+            //console.log(results.rows);
+            $('#listcontent').empty();
+            var rows = results.rows;
+            for (var entrynumber in rows){
+                var currentDoc = rows[entrynumber]
+                var allAttachments = currentDoc.doc._attachments;
+                var imageAttachment = allAttachments[currentDoc.id+'.jpg'];
+                var imageData = imageAttachment.data;
+                console.log(imageAttachment);
+                
+                var imageUrl = URL.createObjectURL(imageData);
+                $('#listcontent').append('<li><a>'+ rows[entrynumber].id +'</a></li>');
+                //$('#listcontent').append('<li id="'+ rows[entrynumber].id +'"><a onclick="clickListEntry(\''+ rows[entrynumber].id +'\');">' + rows[entrynumber].value.properties.name + '</a><a onclick="deleteListEntry(\''+ rows[entrynumber].id +'\')" href=""></a></li>');
+                //$('#listcontent').append('<li id="'+ rows[entrynumber].id +'"><a onclick="clickListEntry(\''+ rows[entrynumber].id +'\');">' + rows[entrynumber].value.title + '</a><a onclick="deleteListEntry(\''+ rows[entrynumber].id +'\')" href=""></a></li>');
+            };
+    $('#listcontent').listview('refresh');
+        }).catch(function (error) {
+            console.log(error);
+    });
+}
