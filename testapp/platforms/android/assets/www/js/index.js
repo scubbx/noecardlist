@@ -66,12 +66,15 @@ function refreshList(){
             $('#listcontent').empty();
             var rows = results.rows;
             for (var entrynumber in rows){
-                //console.log(rows[entrynumber].id);
-                $('#listcontent').append('<li><a>'+ rows[entrynumber].id +'</a></li>');
-                //$('#listcontent').append('<li id="'+ rows[entrynumber].id +'"><a onclick="clickListEntry(\''+ rows[entrynumber].id +'\');">' + rows[entrynumber].value.properties.name + '</a><a onclick="deleteListEntry(\''+ rows[entrynumber].id +'\')" href=""></a></li>');
-                //$('#listcontent').append('<li id="'+ rows[entrynumber].id +'"><a onclick="clickListEntry(\''+ rows[entrynumber].id +'\');">' + rows[entrynumber].value.title + '</a><a onclick="deleteListEntry(\''+ rows[entrynumber].id +'\')" href=""></a></li>');
+                if (rows[entrynumber].doc._attachments != undefined){
+                    var allAttachments = rows[entrynumber].doc._attachments;
+                    var imageAttachment = allAttachments[rows[entrynumber].id+'.jpg'].data;
+                    $('#listcontent').append('<li><a href="#"><img src="data:image/jpeg;base64,'+ imageAttachment +'" /><h2>'+ rows[entrynumber].id +'</h2><p>'+ rows[entrynumber].doc.open +'</p></a></li>');
+                } else {
+                    $('#listcontent').append('<li><a href="#"><img src="data:image/jpeg;base64,'+ imageAttachment +'" /><h2>'+ rows[entrynumber].id +'</h2><p>'+ rows[entrynumber].doc.open +'</p></a></li>');
+                };
             };
-    $('#listcontent').listview('refresh');
+            $('#listcontent').listview('refresh');
         }).catch(function (error) {
             console.log(error);
     });

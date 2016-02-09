@@ -46,11 +46,12 @@
         
         <div data-role="page">
             
-            <div data-role="header" data-position="fixed" class="wow fadeInDown" data-wow-delay="0.2s">
+            <div data-role="header" data-position="fixed" class="wow fadeInDown" data-wow-delay="0.2s" data-tap-toggle="false">
                 <h1 class="wow fadeIn" data-wow-delay='0.4s'>Niederösterreich</h1>
             </div>
             
 			<div role="main" class="ui-content" data-inset="false">
+                <a onclick="refreshList();" data-role="button">Refresh</a>
 				<ul data-role="listview" data-icon="false" id="listcontent">
                 </ul>
 			</div>
@@ -65,6 +66,7 @@
         
         </div>
         
+        <script src="/js/base64-binary.js"></script>
         <script src="/js/jquery.min.js"></script>
         <script src="/js/jquery-ui.min.js"></script>
         <script src="/js/jquery.mobile.min.js"></script>
