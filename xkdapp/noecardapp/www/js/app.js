@@ -36,8 +36,9 @@ function refreshMainList(){
                 if (rows[entrynumber].doc._attachments !== undefined){
                     var allAttachments = rows[entrynumber].doc._attachments;
                     var imageAttachment = allAttachments['preview.jpg'].data;
+                    var clickCommand = "showDetails('"+rows[entrynumber].id+"')";
                     newListEntry = '<li>';
-                    newListEntry += '<a href="#"><img src="data:image/jpeg;base64,'+ imageAttachment +'" />';
+                    newListEntry += '<a onclick="'+ clickCommand +'" href="#"><img src="data:image/jpeg;base64,'+ imageAttachment +'" />';
                     newListEntry += '<h2>'+ rows[entrynumber].id +'</h2>';
                     newListEntry += '<p>'+ rows[entrynumber].doc.open +'</p>';
                     newListEntry += '</a></li>';
@@ -54,4 +55,14 @@ function refreshMainList(){
             console.log("app.js: refreshing list");
             $('#list_mainlist').listview("refresh");
         });
+}
+
+function showDetails(docid){
+    console.log(docid);
+    localdb.get(docid)
+        .then(function(result){
+            
+    });
+    $.mobile.changePage('#page_details');
+    
 }
