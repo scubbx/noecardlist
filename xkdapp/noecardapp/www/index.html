@@ -63,16 +63,18 @@
         <!-- normalizes device and document ready events, see file for details -->
         <script type="application/javascript" src="lib/jquery.min.js"></script>
         <script type="application/javascript" src="jqm/jquery.mobile-min.js" data-ver="0"></script>
-
+        <!-- <script type="application/javascript" src="js/SQLitePlugin.js"></script> -->
         <script type="application/javascript" src="js/pouchdb-5.2.1.min.js"></script>
         <script type="application/javascript" src="xdk/appdesigner/js/rest-of-space.js"></script>
+        <script type="application/javascript" src="js/index_user_scripts.js"></script>
+        <script type="application/javascript" src="xdk/ad/jqm_subpage.js"></script>
     </head>
 
     <body>
         <!-- IMPORTANT: Do not include a weinre script tag as part of your release builds! -->
         <!-- Place your remote debugging (weinre) script URL from the Test tab here, if it does not work above -->
         <!-- <script src="http://debug-software.intel.com/target/target-script-min.js#insertabiglongfunkynumberfromthexdkstesttab"></script> -->
-        <div class="upage" id="mainpage" data-role="page">
+        <div class="upage" id="page_main" data-role="page">
             <div class="upage-outer">
                 <div data-role="header" class="container-group inner-element uib_w_5" data-uib="jquery_mobile/header" data-ver="0">
                     <h1>Niederösterreich</h1>
@@ -97,7 +99,7 @@
                     <h1>Besucht</h1>
                     <div class="widget-container wrapping-col single-centered">
                         <div data-role="controlgroup" class="uib-jqm-flex widget uib_w_7 d-margins" data-uib="jquery_mobile/button_group" data-ver="0" data-type="horizontal">
-                            <a class="widget uib_w_8" data-uib="jquery_mobile/button" data-ver="0" data-role="button" data-icon="bullets">Liste</a><a class="widget uib_w_9" data-uib="jquery_mobile/button" data-ver="0" data-role="button" data-icon="search">Suche</a>
+                            <a class="widget uib_w_8" data-uib="jquery_mobile/button" data-ver="0" data-role="button" data-icon="refresh">Refresh</a><a class="widget uib_w_9" data-uib="jquery_mobile/button" data-ver="0" data-role="button" data-icon="search">Suche</a>
                             <a class="widget uib_w_10" data-uib="jquery_mobile/button" data-ver="0" data-role="button" data-icon="alert">Button</a>
                         </div>
                     </div>
@@ -109,19 +111,38 @@
         </div>
         <div class="upage" id="page_details" data-role="page">
             <div class="upage-outer">
-                <div data-role="header" class="container-group inner-element uib_w_15" data-uib="jquery_mobile/header" data-ver="0">
-                    <h1></h1>
+                <div data-role="header" class="container-group inner-element uib_w_15" data-uib="jquery_mobile/header" data-ver="0" id="details_header">
+                    <h1><span id="details_header_text">Niederösterreich</span></h1>
                     <div class="widget-container wrapping-col single-centered"></div>
                     <div class="widget-container content-area horiz-area wrapping-col left"></div>
                     <div class="widget-container content-area horiz-area wrapping-col right"></div>
                 </div>
-                <div class="upage-content ac0 content-area vertical-col left">
+                <div class="upage-content ac0 content-area vertical-col left" id="page_75_57">
                     <div class="widget uib_w_16 scale-image d-margins" data-uib="media/img" data-ver="0">
                         <figure class="figure-align">
-                            <img src="images/Strabburg.jpg">
+                            <img id="details_image" src="images/Strabburg.jpg">
                             <figcaption data-position="bottom"></figcaption>
                         </figure>
                     </div>
+                    <div class="tarea widget uib_w_22 d-margins" data-uib="media/text" data-ver="0" name="uib_w_22" id="details_details">
+                        <div class="widget-container left-receptacle"></div>
+                        <div class="widget-container right-receptacle"></div>
+                        <div class="text-container">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-role="footer" data-position="fixed" class="container-group inner-element uib_w_17" data-uib="jquery_mobile/footer" data-ver="0">
+                    <h1></h1>
+                    <div class="widget-container wrapping-col single-centered">
+                        <div data-role="controlgroup" class="uib-jqm-flex widget uib_w_18 d-margins" data-uib="jquery_mobile/button_group" data-ver="0" data-type="horizontal">
+                            <a class="widget uib_w_19" data-uib="jquery_mobile/button" data-ver="0" data-role="button" data-icon="bullets">Liste</a><a class="widget uib_w_20" data-uib="jquery_mobile/button" data-ver="0" data-role="button" data-icon="search">Suche</a>
+                            <a class="widget uib_w_21" data-uib="jquery_mobile/button" data-ver="0" data-role="button" data-icon="alert">Button</a>
+                        </div>
+                    </div>
+                    <div class="widget-container content-area horiz-area wrapping-col left"></div>
+                    <div class="widget-container content-area horiz-area wrapping-col right"></div>
                 </div>
             </div>
         </div>

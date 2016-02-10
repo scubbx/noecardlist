@@ -59,9 +59,22 @@ function refreshMainList(){
 
 function showDetails(docid){
     console.log(docid);
-    localdb.get(docid)
+    localdb.get(docid, { include_docs: true, attachments: true, reduce: false })
         .then(function(result){
-            
+            console.log(result);
+            $('#details_header_text').text(result.title);
+            $('#details_details').text(result.description);
+        /*
+            localdb.getAttachment(docid, 'preview.jpg')
+            .then(function(imageBlob){
+                var imageUrl = URL.createObjectURL(imageBlob);
+                $('#details_details').text(imageUrl);
+                $('#details_image').attr('src',imageUrl);
+            }).catch(function(err){
+                $('#details_details').text(err);
+            });
+        */
+            $('#details_image').attr('src',"data:image/jpeg;base64,"+ result._attachments['preview.jpg'].data);
     });
     $.mobile.changePage('#page_details');
     
