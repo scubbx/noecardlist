@@ -1,5 +1,5 @@
 /*jshint browser:true */
-/*global $ */(function()
+/*global $ , refreshMainList:false */(function()
 {
  "use strict";
  /*
@@ -20,6 +20,13 @@
     {
         /* your code goes here */ 
         $.mobile.changePage('#page_main');
+    });
+    
+        /* button  Refresh */
+    $(document).on("click", ".uib_w_8", function(evt)
+    {
+        /* your code goes here */ 
+        refreshMainList();
     });
     
     }

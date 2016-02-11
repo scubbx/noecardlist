@@ -97,6 +97,27 @@ document.addEventListener("app.Ready", app.initEvents, false) ;
 app.initDatabase = function() {
     remotedb = new PouchDB('http://gi88.geoinfo.tuwien.ac.at:5984/noecard');
     localdb = new PouchDB('noecard');
+    console.log(localdb.adapter);
+    //localdb.destroy().then(function(msg){alert(msg);});
+    //localdb = new PouchDB('noecard');
+    /*
+    PouchDB.replicate(remotedb, localdb)
+    .on('complete', function(info){
+        console.log("sync: complete");
+        alert("complete");
+        console.log(info);
+    })
+    .on('error', function(info){
+        console.log("sync: error");
+        alert("error");
+        console.log(info);
+    })
+    .on('change', function(info){
+        console.log("sync: change");
+        alert("change");
+        console.log(info);
+    });
+    */
     PouchDB.sync(localdb, remotedb, {live: false, retry: false})
     .on('complete', function(info){
         console.log("sync: complete");
@@ -105,11 +126,13 @@ app.initDatabase = function() {
         })
     .on('error', function(info){
         console.log("sync: error");
+        alert(info);
         refreshMainList();
         })
     .on('change', function(info){
         console.log("sync: change");
         });
+    
     /*
     var sync = PouchDB.sync(localdb, remotedb, {live: true, retry: true})
     .on('change', function(info){ 
