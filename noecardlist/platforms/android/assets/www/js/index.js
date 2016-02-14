@@ -21,6 +21,7 @@ function initMap(){
 };
 
 function initDatabase() {
+    PouchDB.plugin(geopouch);
     remotedb = new PouchDB('http://gi88.geoinfo.tuwien.ac.at:5984/noecard');
     localdb = new PouchDB('noecard');
     console.log(localdb.adapter);
@@ -106,10 +107,10 @@ function refreshMainList(){
 }
 
 function showDetails(docid){
-    console.log(docid);
+    //console.log(docid);
     localdb.get(docid, { include_docs: true, attachments: true, reduce: false })
         .then(function(result){
-            console.log(result);
+            //console.log(result);
             $('#details_header_text').text(result.title);
             $('#details_details').text(result.description);
             $('#details_cheaper').text('€ ' + result.price);
