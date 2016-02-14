@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <meta charset="UTF-8">
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *"> -->
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        
+        <link rel="stylesheet" type="text/css" href="css/jquery.mobile-min.css">
+        
+		<link rel="stylesheet" href="vendor/waves/waves.min.css" />
+		<link rel="stylesheet" href="vendor/wow/animate.css" />
+		<link rel="stylesheet" href="css/nativedroid2.css" />
+		<link rel="stylesheet" href="css/leaflet.css" />
+        
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>Hello World</title>
+    </head>
+    <body>
+		
+		<!-- ---------- PAGE MAIN ---------- -->
+        <div id="page_main" data-role="page">
+            <div data-role="header" data-position="fixed">
+                <h1>NOE Card</h1>
+            </div>
+            <div data-role="content">
+				<div id="loadinginfo">
+					<p style="text-align: center;">Lade Daten ...</p>
+				</div>
+                <ul id="list_mainlist" data-filter="true" data-autodividers="true" data-role="listview">
+                </ul>
+            </div>
+            <div data-role="footer" data-position="fixed">
+				<div data-role="controlgroup" data-type="horizontal">
+					<a href="" onclick="refreshMainList();" data-role="button" data-icon="refresh">Aktualisieren</a>
+					<a href="" data-role="button">Leer</a>
+				</div>
+            </div>
+        </div>
+        
+        <!-- ---------- PAGE DETAIL ---------- -->
+        <div id="page_details" data-role="page">
+            <div data-role="header" data-position="fixed">
+                <h1 id="details_header_text">NOE Card</h1>
+            </div>
+            <div data-role="content">
+                <!-- <img style="float:left; margin-top: 15px; margin-right: 5px;" id="details_image" src=""> -->
+                <img id="details_image" src="">
+                <p id="details_details"></p>
+                <div id="map"></div>
+                <p id="details_cheaper"></p>
+            </div>
+            <div data-role="footer" data-position="fixed">
+				<div data-role="controlgroup" data-type="horizontal">
+					<a href="" data-rel="back" data-role="button" data-icon="bullets">Zurück</a>
+					<a href="" data-role="button">Leer</a>
+				</div>
+            </div>
+        </div>
+        
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="application/javascript" src="js/jquery.min.js"></script>
+        <script type="application/javascript" src="js/jquery.mobile-min.js"></script>
+        <script type="application/javascript" src="js/pouchdb-5.2.1.min.js"></script>
+        <script type="application/javascript" src="js/leaflet.js"></script>
+        
+		<script src="vendor/waves/waves.min.js"></script>
+		<script src="vendor/wow/wow.min.js"></script>
+		<script src="js/nativedroid2.js"></script>
+		<script src="nd2settings.js"></script>
+        
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>
