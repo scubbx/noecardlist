@@ -1,14 +1,18 @@
 var localdb;
 var remotedb;
 var map;
+var mainmap;
 var marker;
-var coords;
+var mainmapmarkers;
+var coords = [47.86,15.16];
 
 document.addEventListener('deviceready', initApp, false);
 
 function initApp(){
     $('#list_mainlist').hide();
     $('#page_details').one("pageshow", initMap);
+    initMainMap();
+    $('#page_map').one("pageshow", mainmap.invalidateSize);
     initDatabase();
 };
 
@@ -18,6 +22,17 @@ function initMap(){
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
     }).addTo(map);
+};
+
+function initMainMap(){
+    mainmap = L.map('mainmap').setView(coords, 13);
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+    }).addTo(mainmap);
+    console.log("invalidate now");
+    mainmapmarkers = L.layerGroup();
+    mainmapmarkers.addTo(mainmap);
+    mainmap.invalidateSize();
 };
 
 function initDatabase() {
@@ -68,6 +83,10 @@ function initPouchSync(){
         });
 }
 
+function parseOpeningHours(timeString){
+    console.log("Original timeString: " + timeString);
+    
+}
 
 function refreshMainList(){
     $('#list_mainlist').hide();
@@ -103,14 +122,26 @@ function refreshMainList(){
             $('#loadinginfo').hide();
             $('#list_mainlist').listview("refresh");
             $('#list_mainlist').show();
+            updateMainMap(rows);
         });
 }
 
+function updateMainMap(docList){
+    for (docIndex in docList) {
+        doc = docList[docIndex].doc;
+        if (doc.coordinates.length > 1) {
+            console.log("add");
+            var docMarker = L.marker(doc.coordinates.reverse()).bindPopup('<p><b>'+ doc.title +'</b><br />'+ doc.addr +'</p>');
+            mainmapmarkers.addLayer(docMarker);
+        }
+    };
+};
+
 function showDetails(docid){
-    console.log(docid);
+    //console.log(docid);
     localdb.get(docid, { include_docs: true, attachments: true, reduce: false })
         .then(function(result){
-            console.log(result);
+            //console.log(result);
             $('#details_header_text').text(result.title);
             $('#details_details').text(result.description);
             $('#details_cheaper').text('€ ' + result.price);
@@ -132,3 +163,5 @@ function showDetails(docid){
     });
     //$.mobile.changePage('#page_details');
 }
+
+// localdb.spatial('viewinfrastructure/points', [15.545998,48.370734,15.6847,48.438654]).then( function(res){ console.log(res); } );
