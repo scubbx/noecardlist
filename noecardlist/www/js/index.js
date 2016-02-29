@@ -92,12 +92,32 @@ function refreshMainList(){
     $('#list_mainlist').hide();
     $('#list_mainlist').empty();
     console.log("app.js: refreshMainList()");
-    localdb.query('viewinfrastructure/byTitle', { include_docs: true, attachments: true, reduce: false })
+    localdb.query('viewinfrastructure/byTitle', { include_docs: false, attachments: false, reduce: false })
         .then(function (results) {
             console.log("app.js: refreshMainList(): got results");
             var rows = results.rows;
             for (var entrynumber in rows) {
                 var newListEntry = "";
+                var clickCommand = "showDetails('"+rows[entrynumber].id+"')";
+                newListEntry = '<li>';
+                newListEntry += '<a onclick="'+ clickCommand +'" href="#page_details" data-transition="slide"><img id="listimage_'+ rows[entrynumber].id +'" src="img/noecard.jpg" />';
+                newListEntry += '<h2>'+ rows[entrynumber].key +'</h2>';
+                newListEntry += '<p id="listdetail_'+ rows[entrynumber].id +'"></p>';
+                newListEntry += '</a></li>';
+                $('#list_mainlist').append(newListEntry);
+                
+                // now, also fetch the preview images
+                localdb.get(rows[entrynumber].id, { include_docs: true, attachments: true, reduce: false })
+                    .then(function(result){
+                        //console.log(result);
+                        if (result._attachments !== undefined){
+                            var imageAttachment = result._attachments['preview.jpg'].data;
+                            $("#listimage_"+result._id).attr("src","data:image/jpeg;base64,"+ imageAttachment);
+                        }
+                        $("#listdetail_"+result._id).text(result.open);
+                    });
+                
+                /*
                 if (rows[entrynumber].doc._attachments !== undefined){
                     var allAttachments = rows[entrynumber].doc._attachments;
                     var imageAttachment = allAttachments['preview.jpg'].data;
@@ -117,12 +137,12 @@ function refreshMainList(){
                     newListEntry += '</a></li>';
                     $('#list_mainlist').append(newListEntry);
                 }
+                */
             }
             console.log("app.js: refreshMainList(): refreshing list");
             $('#loadinginfo').hide();
             $('#list_mainlist').listview("refresh");
             $('#list_mainlist').show();
-            updateMainMap(rows);
         });
 }
 
