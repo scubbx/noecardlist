@@ -1,14 +1,20 @@
 var localdb;
 var remotedb;
 var map;
+var mainmap;
 var marker;
-var coords;
+var mainmapmarkers;
+var trainstations;
+var trainstationsmarker;
+var coords = [47.86,15.16];
 
 document.addEventListener('deviceready', initApp, false);
 
 function initApp(){
     $('#list_mainlist').hide();
     $('#page_details').one("pageshow", initMap);
+    initMainMap();
+    $('#page_map').one("pageshow", mainmap.invalidateSize);
     initDatabase();
 };
 
@@ -18,6 +24,31 @@ function initMap(){
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
     }).addTo(map);
+};
+
+function initMainMap(){
+    mainmap = L.map('mainmap').setView(coords, 13);
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+    }).addTo(mainmap);
+    console.log("invalidate now");
+    
+    // load data about train stations (4km buffer regions)
+    $.getJSON( "../zugstationen_4km_wgs.geojson", function( data ) {
+        trainstations = data;
+        trainstationsmarker = L.layerGroup();
+        for (var entrynumber in trainstations.features) {
+            var trainstation = trainstations.features[entrynumber];
+            // we need to switch x and y coordinates
+            var corrected_coordinates = _.map(trainstation.geometry.coordinates[0], function(coords){ return coords.reverse(); });
+            var poly = L.polygon(corrected_coordinates);
+            poly.addTo(trainstationsmarker);
+        }
+        trainstationsmarker.addTo(mainmap);
+    });
+    mainmapmarkers = L.layerGroup();
+    mainmapmarkers.addTo(mainmap);
+    mainmap.invalidateSize();
 };
 
 function initDatabase() {
@@ -32,6 +63,7 @@ function initDatabase() {
         console.log("sync: complete");
         console.log(info);
         refreshMainList();
+        
         //initPouchSync();
     })
     .on('error', function(info){
@@ -68,36 +100,41 @@ function initPouchSync(){
         });
 }
 
+function parseOpeningHours(timeString){
+    console.log("Original timeString: " + timeString);
+    
+}
 
 function refreshMainList(){
     $('#list_mainlist').hide();
     $('#list_mainlist').empty();
     console.log("app.js: refreshMainList()");
-    localdb.query('viewinfrastructure/byTitle', { include_docs: true, attachments: true, reduce: false })
+    localdb.query('viewinfrastructure/byTitle', { include_docs: true, attachments: false, reduce: false })
         .then(function (results) {
             console.log("app.js: refreshMainList(): got results");
             var rows = results.rows;
+            updateMainMap(rows);
             for (var entrynumber in rows) {
                 var newListEntry = "";
-                if (rows[entrynumber].doc._attachments !== undefined){
-                    var allAttachments = rows[entrynumber].doc._attachments;
-                    var imageAttachment = allAttachments['preview.jpg'].data;
-                    var clickCommand = "showDetails('"+rows[entrynumber].id+"')";
-                    newListEntry = '<li>';
-                    newListEntry += '<a onclick="'+ clickCommand +'" href="#page_details" data-transition="slide"><img src="data:image/jpeg;base64,'+ imageAttachment +'" />';
-                    newListEntry += '<h2>'+ rows[entrynumber].id +'</h2>';
-                    newListEntry += '<p>'+ rows[entrynumber].doc.open +'</p>';
-                    newListEntry += '</a></li>';
-                    $('#list_mainlist').append(newListEntry);
-                } else {
-                    var clickCommand = "showDetails('"+rows[entrynumber].id+"')";
-                    newListEntry = '<li>';
-                    newListEntry += '<a onclick="'+ clickCommand +'" href="#page_details" data-transition="slide" data-direction="reverse"><img src="img/noecard.jpg" />';
-                    newListEntry += '<h2>'+ rows[entrynumber].id +'</h2>';
-                    newListEntry += '<p>'+ rows[entrynumber].doc.open +'</p>';
-                    newListEntry += '</a></li>';
-                    $('#list_mainlist').append(newListEntry);
-                }
+                var clickCommand = "showDetails('"+rows[entrynumber].id+"')";
+                newListEntry = '<li>';
+                newListEntry += '<a onclick="'+ clickCommand +'" href="#page_details" data-transition="slide"><img id="listimage_'+ rows[entrynumber].id +'" src="img/noecard.jpg" />';
+                newListEntry += '<h2>'+ rows[entrynumber].key +'</h2>';
+                newListEntry += '<p id="listdetail_'+ rows[entrynumber].id +'"></p>';
+                newListEntry += '</a></li>';
+                $('#list_mainlist').append(newListEntry);
+                
+                // now, also fetch the preview images
+                localdb.get(rows[entrynumber].id, { include_docs: true, attachments: true, reduce: false })
+                    .then(function(result){
+                        //console.log(result);
+                        if (result._attachments !== undefined){
+                            var imageAttachment = result._attachments['preview.jpg'].data;
+                            $("#listimage_"+result._id).attr("src","data:image/jpeg;base64,"+ imageAttachment);
+                        }
+                        $("#listdetail_"+result._id).text(result.open);
+                    });
+                
             }
             console.log("app.js: refreshMainList(): refreshing list");
             $('#loadinginfo').hide();
@@ -105,6 +142,17 @@ function refreshMainList(){
             $('#list_mainlist').show();
         });
 }
+
+function updateMainMap(docList){
+    for (docIndex in docList) {
+        doc = docList[docIndex].doc;
+        if (doc.coordinates.length > 1) {
+            // console.log("add");
+            var docMarker = L.marker(doc.coordinates.reverse()).bindPopup('<p><b>'+ doc.title +'</b><br />'+ doc.addr +'</p>');
+            mainmapmarkers.addLayer(docMarker);
+        }
+    };
+};
 
 function showDetails(docid){
     //console.log(docid);
@@ -132,3 +180,5 @@ function showDetails(docid){
     });
     //$.mobile.changePage('#page_details');
 }
+
+// localdb.spatial('viewinfrastructure/points', [15.545998,48.370734,15.6847,48.438654]).then( function(res){ console.log(res); } );

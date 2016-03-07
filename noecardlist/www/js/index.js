@@ -4,6 +4,8 @@ var map;
 var mainmap;
 var marker;
 var mainmapmarkers;
+var trainstations;
+var trainstationsmarker;
 var coords = [47.86,15.16];
 
 document.addEventListener('deviceready', initApp, false);
@@ -30,6 +32,20 @@ function initMainMap(){
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
     }).addTo(mainmap);
     console.log("invalidate now");
+    
+    // load data about train stations (4km buffer regions)
+    $.getJSON( "../zugstationen_4km_wgs.geojson", function( data ) {
+        trainstations = data;
+        trainstationsmarker = L.layerGroup();
+        for (var entrynumber in trainstations.features) {
+            var trainstation = trainstations.features[entrynumber];
+            // we need to switch x and y coordinates
+            var corrected_coordinates = _.map(trainstation.geometry.coordinates[0], function(coords){ return coords.reverse(); });
+            var poly = L.polygon(corrected_coordinates);
+            poly.addTo(trainstationsmarker);
+        }
+        trainstationsmarker.addTo(mainmap);
+    });
     mainmapmarkers = L.layerGroup();
     mainmapmarkers.addTo(mainmap);
     mainmap.invalidateSize();
@@ -47,6 +63,7 @@ function initDatabase() {
         console.log("sync: complete");
         console.log(info);
         refreshMainList();
+        
         //initPouchSync();
     })
     .on('error', function(info){
@@ -92,10 +109,11 @@ function refreshMainList(){
     $('#list_mainlist').hide();
     $('#list_mainlist').empty();
     console.log("app.js: refreshMainList()");
-    localdb.query('viewinfrastructure/byTitle', { include_docs: false, attachments: false, reduce: false })
+    localdb.query('viewinfrastructure/byTitle', { include_docs: true, attachments: false, reduce: false })
         .then(function (results) {
             console.log("app.js: refreshMainList(): got results");
             var rows = results.rows;
+            updateMainMap(rows);
             for (var entrynumber in rows) {
                 var newListEntry = "";
                 var clickCommand = "showDetails('"+rows[entrynumber].id+"')";
@@ -117,27 +135,6 @@ function refreshMainList(){
                         $("#listdetail_"+result._id).text(result.open);
                     });
                 
-                /*
-                if (rows[entrynumber].doc._attachments !== undefined){
-                    var allAttachments = rows[entrynumber].doc._attachments;
-                    var imageAttachment = allAttachments['preview.jpg'].data;
-                    var clickCommand = "showDetails('"+rows[entrynumber].id+"')";
-                    newListEntry = '<li>';
-                    newListEntry += '<a onclick="'+ clickCommand +'" href="#page_details" data-transition="slide"><img src="data:image/jpeg;base64,'+ imageAttachment +'" />';
-                    newListEntry += '<h2>'+ rows[entrynumber].id +'</h2>';
-                    newListEntry += '<p>'+ rows[entrynumber].doc.open +'</p>';
-                    newListEntry += '</a></li>';
-                    $('#list_mainlist').append(newListEntry);
-                } else {
-                    var clickCommand = "showDetails('"+rows[entrynumber].id+"')";
-                    newListEntry = '<li>';
-                    newListEntry += '<a onclick="'+ clickCommand +'" href="#page_details" data-transition="slide" data-direction="reverse"><img src="img/noecard.jpg" />';
-                    newListEntry += '<h2>'+ rows[entrynumber].id +'</h2>';
-                    newListEntry += '<p>'+ rows[entrynumber].doc.open +'</p>';
-                    newListEntry += '</a></li>';
-                    $('#list_mainlist').append(newListEntry);
-                }
-                */
             }
             console.log("app.js: refreshMainList(): refreshing list");
             $('#loadinginfo').hide();
@@ -150,7 +147,7 @@ function updateMainMap(docList){
     for (docIndex in docList) {
         doc = docList[docIndex].doc;
         if (doc.coordinates.length > 1) {
-            console.log("add");
+            // console.log("add");
             var docMarker = L.marker(doc.coordinates.reverse()).bindPopup('<p><b>'+ doc.title +'</b><br />'+ doc.addr +'</p>');
             mainmapmarkers.addLayer(docMarker);
         }

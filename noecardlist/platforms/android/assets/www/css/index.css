@@ -23,6 +23,18 @@ body {
 }
 
 #map { height: 280px; }
+#mainmap {
+    height: 100%;
+}
+
+#content-map.ui-content {
+    position: absolute;
+    top: 58px;
+    right: 0;
+    bottom: 48px;
+    left: 0;
+    padding: 0 !important;
+}
 
 @keyframes fade {
     from { opacity: 1.0; }

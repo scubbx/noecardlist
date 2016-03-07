@@ -43,7 +43,7 @@
             <div data-role="footer" data-position="fixed">
 				<div data-role="controlgroup" data-type="horizontal">
 					<a href="" onclick="refreshMainList();" data-role="button" data-icon="refresh">Aktualisieren</a>
-					<a href="" data-role="button">Leer</a>
+					<a href="#page_map" data-role="button">Landkarte</a>
 				</div>
             </div>
         </div>
@@ -63,6 +63,22 @@
             <div data-role="footer" data-position="fixed">
 				<div data-role="controlgroup" data-type="horizontal">
 					<a href="" data-rel="back" data-role="button" data-icon="bullets">Zurück</a>
+					<a href="#page_map" data-role="button">Landkarte</a>
+				</div>
+            </div>
+        </div>
+        
+		<!-- ---------- PAGE MAP ---------- -->
+        <div id="page_map" data-role="page">
+            <div data-role="header" data-position="fixed">
+                <h1>NOE Card</h1>
+            </div>
+            <div data-role="content" id="content-map">
+				<div id="mainmap"></div>
+            </div>
+            <div data-role="footer" data-position="fixed">
+				<div data-role="controlgroup" data-type="horizontal">
+					<a href="" data-rel="back" data-role="button" data-icon="bullets">Zurück</a>
 					<a href="" data-role="button">Leer</a>
 				</div>
             </div>
@@ -74,6 +90,7 @@
         <script type="application/javascript" src="js/pouchdb-5.2.1.min.js"></script>
         <script type="application/javascript" src="js/geopouch.js"></script>
         <script type="application/javascript" src="js/leaflet.js"></script>
+        <script type="application/javascript" src="js/underscore-min.js"></script>
         
 		<script src="vendor/waves/waves.min.js"></script>
 		<script src="vendor/wow/wow.min.js"></script>
